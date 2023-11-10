@@ -25,14 +25,16 @@ public class UsersService {
 
     @Autowired
     private Cloudinary cloudinary;
-    public void save(NewUserDTO body) throws IOException {
+    public User save(NewUserDTO body) throws IOException {
 
         User newUser = new User();
         newUser.setAvatarUrl("http://ui-avatars.com/api/?name="+body.name() + "+" + body.surname());
         newUser.setName(body.name());
         newUser.setSurname(body.surname());
         newUser.setEmail(body.email());
+        newUser.setUsername(body.username());
         usersRepository.save(newUser);
+        return newUser;
     }
 
     public Page<User> getUsers(int page, int size, String orderBy) {
@@ -41,24 +43,28 @@ public class UsersService {
         return usersRepository.findAll(pageable);
     }
 
-    public User findById(int id) throws NotFoundException {
-        return usersRepository.findById(id).orElseThrow( ()  -> new NotFoundException(id));
+    public User findById(long id) throws NotFoundException {
+        return usersRepository.findById((int) id).orElseThrow( ()  -> new NotFoundException((int) id));
     }
 
-    public void findByIdAndDelete(int id) throws NotFoundException{
+    public void findByIdAndDelete(long id) throws NotFoundException{
         User found = this.findById(id);
         usersRepository.delete(found);
     }
 
-    public User findByIdAndUpdate(int id, User body) throws NotFoundException{
+    public User findByIdAndUpdate(long id, User body) throws NotFoundException{
         User found = this.findById(id);
         found.setSurname(body.getSurname());
         found.setName(body.getName());
         return usersRepository.save(found);
     }
 
-    public String uploadPicture(MultipartFile file) throws IOException {
-        return (String) cloudinary.uploader().upload(file.getBytes(), ObjectUtils.emptyMap()).get("url");
+    public String uploadPicture(MultipartFile file, long id) throws IOException {
+        User target = this.findById(id);
+        String url = (String) cloudinary.uploader().upload(file.getBytes(), ObjectUtils.emptyMap()).get("url");
+        target.setAvatarUrl(url);
+        usersRepository.save(target);
+        return "profile picture upload success";
     }
 
 }

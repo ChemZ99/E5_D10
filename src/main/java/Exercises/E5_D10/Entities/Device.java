@@ -15,6 +15,6 @@ public class Device {
     @Column
     private String status;
     @ManyToOne
-    @JoinColumn
+    @JoinColumn(name = "user_id")
     private User user;
 }

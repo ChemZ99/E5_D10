@@ -38,6 +38,6 @@ public class ExceptionsHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)  // 500
     public ErrorsResponseDTO handleGeneric(Exception e){
         e.printStackTrace();
-        return new ErrorsResponseDTO("Problema lato server...giuro che lo risolveremo presto", new Date());
+        return new ErrorsResponseDTO("server side error - it will never be fixed so go cry somewhere else", new Date());
     }
 }
