@@ -20,6 +20,8 @@ public class User {
     private String surname;
     @Column
     private String email;
+    @Column
+    private String avatarUrl;
     @OneToMany(mappedBy = "Device")
     private List<Device> devices;
 }
